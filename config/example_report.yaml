@@ -1,0 +1,50 @@
+title: "Weekly Sales Report"
+description: "Auto-generated weekly summary of sales metrics"
+
+sections:
+  - title: "Revenue by Region"
+    query: |
+      SELECT region, SUM(revenue) as total_revenue, COUNT(*) as deals
+      FROM sales
+      WHERE close_date >= date('now', '-7 days')
+      GROUP BY region
+      ORDER BY total_revenue DESC
+    chart:
+      type: bar
+      x: region
+      y: total_revenue
+      title: "Revenue by Region (Last 7 Days)"
+
+  - title: "Daily Revenue Trend"
+    query: |
+      SELECT date(close_date) as day, SUM(revenue) as revenue
+      FROM sales
+      WHERE close_date >= date('now', '-30 days')
+      GROUP BY date(close_date)
+      ORDER BY day
+    chart:
+      type: line
+      x: day
+      y: revenue
+      title: "Daily Revenue (Last 30 Days)"
+
+  - title: "Top 10 Deals"
+    query: |
+      SELECT account_name, deal_name, revenue, stage, close_date
+      FROM sales
+      WHERE close_date >= date('now', '-7 days')
+      ORDER BY revenue DESC
+      LIMIT 10
+
+  - title: "Pipeline by Stage"
+    query: |
+      SELECT stage, COUNT(*) as deals, SUM(revenue) as total_value
+      FROM sales
+      WHERE stage != 'Closed Won'
+      GROUP BY stage
+      ORDER BY total_value DESC
+    chart:
+      type: pie
+      x: stage
+      y: total_value
+      title: "Pipeline Value by Stage"
